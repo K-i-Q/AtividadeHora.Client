@@ -1,9 +1,15 @@
+import { useLocation } from 'react-router-dom';
 
+function Home() {
 
-function Home(){
+    const location = useLocation();
+    let userName = location.state.userName;
+    let userPhoto = location.state.userPhoto;
+
     return (
         <>
-            LOGADO
+            LOGADO {userName}<br />
+            <img src={userPhoto}  width={50} height={50}/>
         </>
     )
 }
