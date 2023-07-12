@@ -14,18 +14,24 @@ function SignIn() {
         setEmail(localStorage.getItem('email'))
     }, []);
 
-    const login = () => {
-        signInWithPopup(auth, provider).then((data) => {
+    const login = async () => {
+        try {
+            const data = await signInWithPopup(auth, provider);
 
             setEmail(data.user.email);
             setPhotoUrl(data.user.photoURL)
             setName(data.user.displayName)
             localStorage.setItem('email', data.user.email);
-            navigate('/home');
-        }).catch((error) => {
+            navigate('/home', {
+                state: {
+                    userName: data.user.displayName,
+                    userPhoto: data.user.photoURL
+                }
+            })
+        } catch (error) {
             //exibe uma mensagem de falha no login
             console.log('DEU ERRO: ', error)
-        })
+        }
     }
 
     return (
