@@ -1,66 +1,47 @@
-import { useLocation } from 'react-router-dom';
-import './styles.css';
-import { db } from '../google-sign-in/config';
+// Home.js
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {
+    Button,
+    TextField,
+    createTheme,
+    ThemeProvider,
+    Snackbar,
+    Alert,
+    Paper
+} from '@mui/material';
+import { db } from '../google-sign-in/config';
+import UserList from '../user/list';
+import UserModal from '../user/modal';
+import './styles.css'
 
 function Home() {
   const location = useLocation();
   let userName = location.state.userName.split(' ')[0];
   let userPhoto = location.state.userPhoto;
+
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   const [dataChanged, setDataChanged] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
 
-  const addUser = async () => {
+  const handleDeleteUser = async (user) => {
     try {
-      if (nameInput.length < 3) {
-        toast.error('O nome deve ter no mínimo 3 caracteres');
-        return;
-      }
-
-      if (!validateEmail(emailInput)) {
-        toast.error('O email informado é inválido');
-        return;
-      }
-
-      const existingUser = users.find((user) => user.email === emailInput);
-      if (existingUser) {
-        toast.error('Já existe um usuário cadastrado com esse email');
-        return;
-      }
-
-      const docRef = await addDoc(collection(db, 'users'), {
-        name: nameInput,
-        email: emailInput,
-      });
-      console.log('Document written with ID: ', docRef.id);
-      setNameInput('');
-      setEmailInput('');
-      setDataChanged(true);
-    } catch (error) {
-      console.error('Error adding document: ', error);
-      toast.error('Ocorreu um erro ao adicionar o usuário');
-    }
-  };
-
-  const deleteUser = async () => {
-    try {
-      if (selectedUser && selectedUser.id) {
-        await deleteDoc(doc(db, 'users', selectedUser.id));
-        console.log('Document deleted with ID: ', selectedUser.id);
+      if (user && user.id) {
+        await deleteDoc(doc(db, 'users', user.id));
+        console.log('Document deleted with ID: ', user.id);
         setDataChanged(true);
       }
-      setIsModalOpen(false);
       setSelectedUser(null);
     } catch (error) {
       console.error('Error deleting document: ', error);
-      toast.error('Ocorreu um erro ao excluir o usuário');
+      setSnackbarMessage('Ocorreu um erro ao excluir o usuário');
+      setSnackbarOpen(true);
     }
   };
 
@@ -72,7 +53,8 @@ function Home() {
         setUsers(usersData);
       } catch (error) {
         console.error('Error fetching users: ', error);
-        toast.error('Ocorreu um erro ao buscar os usuários');
+        setSnackbarMessage('Ocorreu um erro ao buscar os usuários');
+        setSnackbarOpen(true);
       }
     };
 
@@ -86,54 +68,139 @@ function Home() {
     return emailRegex.test(email);
   };
 
+  // Cria um tema personalizado para o TextField
+  const theme = createTheme({
+    components: {
+        MuiTextField: {
+            styleOverrides: {
+                root: {
+                    '& .MuiInputLabel-root': {
+                        color: 'white',
+                    },
+                    '& .MuiInputLabel-outlined.Mui-focused': {
+                        color: 'white',
+                    },
+                    '& .MuiOutlinedInput-root': {
+                        '& fieldset': {
+                            borderColor: 'white',
+                        },
+                        '&:hover fieldset': {
+                            borderColor: 'white',
+                        },
+                        '&.Mui-focused fieldset': {
+                            borderColor: 'white',
+                        },
+                        '& input::placeholder': {
+                            color: 'white',
+                        },
+                    },
+                    input: {
+                        color: 'white'
+                    }
+                },
+            },
+        },
+    },
+});
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleOpenModal = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const addUser = async () => {
+    try {
+      if (nameInput.length < 3) {
+        setSnackbarMessage('O nome deve ter no mínimo 3 caracteres');
+        setSnackbarOpen(true);
+        return;
+      }
+
+      if (!validateEmail(emailInput)) {
+        setSnackbarMessage('O email informado é inválido');
+        setSnackbarOpen(true);
+        return;
+      }
+
+      const existingUser = users.find((user) => user.email === emailInput);
+      if (existingUser) {
+        setSnackbarMessage('Já existe um usuário cadastrado com esse email');
+        setSnackbarOpen(true);
+        return;
+      }
+
+      const docRef = await addDoc(collection(db, 'users'), {
+        name: nameInput,
+        email: emailInput,
+      });
+      console.log('Document written with ID: ', docRef.id);
+      setNameInput('');
+      setEmailInput('');
+      setDataChanged(true);
+    } catch (error) {
+      console.error('Error adding document: ', error);
+      setSnackbarMessage('Ocorreu um erro ao adicionar o usuário');
+      setSnackbarOpen(true);
+    }
+  };
+
   return (
-    <>
-      <div className='home-container'>
-        {userName}<br />
-        <img src={userPhoto} width={50} height={50} />
-      </div>
+    <ThemeProvider theme={theme}>
       <div>
-        <input
-          type='text'
-          value={nameInput}
-          placeholder='Nome'
-          onChange={(e) => setNameInput(e.target.value)}
-        />
-        <input
-          type='email'
-          value={emailInput}
-          placeholder='Email'
-          onChange={(e) => setEmailInput(e.target.value)}
-        />
-        <button onClick={addUser}>Add user</button>
-      </div>
-      <div>
-        {users.map((user) => (
-          <div id={user.id} key={user.id}>
-            {user.name}
-            <button onClick={() => {
-              setSelectedUser(user);
-              setIsModalOpen(true);
-            }}>Excluir</button>
-          </div>
-        ))}
-      </div>
-      {isModalOpen && selectedUser && (
-        <div className='modal'>
-          <div className='modal-content'>
-            <h2>Tem certeza que deseja excluir o usuário?</h2>
-            <p>Nome: {selectedUser.name}</p>
-            <p>Email: {selectedUser.email}</p>
-            <div className='modal-buttons'>
-              <button onClick={deleteUser}>Confirmar</button>
-              <button onClick={() => setIsModalOpen(false)}>Cancelar</button>
-            </div>
-          </div>
+        <div className='home-container'>
+          <Paper elevation={24} className='user-container'>
+            {userName}<br />
+            <img src={userPhoto} width={50} height={50} />
+          </Paper>
         </div>
-      )}
-      <ToastContainer position="top-center" />
-    </>
-  )
+        <div>
+          <TextField
+            type='text'
+            value={nameInput}
+            label='Nome'
+            variant='outlined'
+            onChange={(e) => setNameInput(e.target.value)}
+          />
+          <TextField
+            type='email'
+            value={emailInput}
+            label='Email'
+            variant='outlined'
+            onChange={(e) => setEmailInput(e.target.value)}
+          />
+          <Button variant='contained' onClick={addUser}>
+            Add User
+          </Button>
+        </div>
+        <UserList users={users} onDeleteUser={handleOpenModal} />
+        <UserModal
+          user={selectedUser}
+          open={isModalOpen}
+          onClose={handleCloseModal}
+          onDelete={() => handleDeleteUser(selectedUser)}
+        />
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert severity='error' onClose={handleSnackbarClose}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+      </div>
+    </ThemeProvider>
+  );
 }
 
 export default Home;

@@ -4,7 +4,9 @@
     right: 0;
     padding: 20px;
 }
-
+.user-container {
+    padding: 16px; /* Adicione espaçamento interno conforme necessário */
+  }
 
 
 
