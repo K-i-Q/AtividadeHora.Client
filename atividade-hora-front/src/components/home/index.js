@@ -4,6 +4,7 @@ import { getFirestore, collection, getDocs, addDoc, where, orderBy, limit, query
 import { differenceInSeconds, format, formatDuration } from 'date-fns';
 import Modal from '@mui/material/Modal';
 import { Box, Button, Typography } from '@mui/material';
+import ExcelJS from 'exceljs';
 
 function Home() {
     const location = useLocation();
@@ -134,9 +135,51 @@ function Home() {
             }).finally(handleCloseModal);
     };
 
+    const handleExportToExcel = () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Atividades');
+
+        // Adicionar cabeçalhos das colunas
+        worksheet.columns = [
+            { header: 'Data', key: 'data' },
+            { header: 'Hora Início', key: 'horaInicio' },
+            { header: 'Hora Fim', key: 'horaFim' },
+            { header: 'Descrição', key: 'descricao' },
+            { header: 'Tempo Trabalhado (horas)', key: 'tempoTrabalhado' },
+        ];
+
+        // Adicionar os dados das atividades à planilha
+        activities.forEach((activity) => {
+            worksheet.addRow({
+                data: format(activity.data, 'dd/MM/yyyy'),
+                horaInicio: format(activity.data_inicio.toDate(), 'HH:mm:ss'),
+                horaFim: format(activity.data_fim.toDate(), 'HH:mm:ss'),
+                descricao: activity.descricao,
+                tempoTrabalhado: (activity.diffInSeconds / 3600).toFixed(3),
+            });
+        });
+
+        // Calcular a soma das horas trabalhadas para adicionar na última linha como "Total Horas"
+        const totalHoras = activities.reduce((total, activity) => total + activity.diffInSeconds, 0) / 3600;
+        worksheet.addRow({ descricao: 'Total Horas ', tempoTrabalhado: totalHoras.toFixed(3) });
+
+        // Salvar o arquivo Excel
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'atividades.xlsx';
+            a.click();
+        });
+    };
+
+
     return (
         <>
             <div>
+                <Button onClick={handleExportToExcel}>Exportar para Excel</Button>
+
                 <button onClick={handleStartStop}>{isRunning ? 'Parar' : 'Iniciar'}</button>
                 {isRunning && (
                     <input
