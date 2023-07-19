@@ -10,15 +10,16 @@ import AdbIcon from '@mui/icons-material/Adb';
 import Tooltip from '@mui/material/Tooltip';
 import Avatar from '@mui/material/Avatar';
 import MenuItem from '@mui/material/MenuItem';
+import { useLocation } from 'react-router-dom';
 
 
 
-const isLogado = true;
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-function ResponsiveAppBar({ handleLoginClick }) {
+function ResponsiveAppBar({ handleLoginClick, isLogado }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const location = useLocation();
 
     const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -91,7 +92,7 @@ function ResponsiveAppBar({ handleLoginClick }) {
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                <Avatar alt="Remy Sharp" src={location.state.userPhoto} />
                             </IconButton>
                         </Tooltip>
                         <Menu
