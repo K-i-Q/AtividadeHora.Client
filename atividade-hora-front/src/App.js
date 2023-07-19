@@ -39,7 +39,6 @@ function App() {
     } catch (error) {
       //exibe uma mensagem de falha no login
       setIsLogado(false);
-      console.log('DEU ERRO: ', error)
     }
   }
 
