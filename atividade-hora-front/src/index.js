@@ -4,9 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Home from './components/home';
-import { createBrowserRouter, RouterProvider} from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import SignIn from './components/google-sign-in';
 import Error from './components/error';
+import { AuthProvider } from './components/auth';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -18,11 +19,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element:<SignIn />
+        element: <SignIn />
       },
       {
         path: 'home',
-        element:<Home />
+        element: <Home />
       }
     ]
   }
@@ -30,7 +31,9 @@ const router = createBrowserRouter([
 
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 );
 
