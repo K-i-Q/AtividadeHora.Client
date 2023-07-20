@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { auth, provider } from './components/google-sign-in/config'
 import { signInWithPopup } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom';
+import Footer from './components/footer';
 
 
 function App() {
@@ -47,7 +48,7 @@ function App() {
       <ResponsiveAppBar isLogado={isLogado} handleLoginClick={login} />
       <header className="App-header">
         <Outlet />
-        <p>footer</p>
+        <Footer />
       </header>
     </div>
   );
