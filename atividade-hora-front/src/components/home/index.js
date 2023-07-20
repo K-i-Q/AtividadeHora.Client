@@ -25,17 +25,19 @@ function Home() {
     const { isLogado } = useAuth();
 
     useEffect(() => {
-        
         if (!isLogado) {
             navigate('/');
         } else {
             setUserName(location.state.userName);
             setUserEmail(location.state.userEmail);
             checkCollection(atividadesRef);
-            loadLastActivities();
         }
 
     }, []);
+
+    useEffect(() => {
+        loadLastActivities();
+    }, [userEmail])
 
     const handleOpenModal = (activity) => {
         setAtividade(activity);
