@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getFirestore, collection, getDocs, addDoc, where, orderBy, limit, query, doc, deleteDoc } from 'firebase/firestore';
 import { differenceInSeconds, format, formatDuration } from 'date-fns';
 import Modal from '@mui/material/Modal';
 import { Box, Button, Typography } from '@mui/material';
 import ExcelJS from 'exceljs';
+import checkCollection from '../../repository';
+import { useAuth } from '../auth';
 
 function Home() {
     const location = useLocation();
-    const [userName] = useState(location.state.userName);
+    const [userName, setUserName] = useState('');
+    const [userEmail, setUserEmail] = useState('');
     const [atividade, setAtividade] = useState({});
     const [isRunning, setIsRunning] = useState(false);
     const [description, setDescription] = useState('');
@@ -17,19 +20,24 @@ function Home() {
     const [activities, setActivities] = useState([]);
     const atividadesRef = collection(getFirestore(), 'atividades');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const { isLogado } = useAuth();
 
     useEffect(() => {
-        checkAtividadesCollection();
-        loadLastActivities();
+        if (!isLogado) {
+            navigate('/');
+        } else {
+            setUserName(location.state.userName);
+            setUserEmail(location.state.userEmail);
+            checkCollection(atividadesRef);
+        }
+
     }, []);
 
-    const checkAtividadesCollection = async () => {
-        const querySnapshot = await getDocs(atividadesRef);
-        if (querySnapshot.empty) {
-            // A coleção 'atividades' não existe, criá-la
-            await addDoc(atividadesRef, {});
-        }
-    };
+    useEffect(() => {
+        loadLastActivities();
+    }, [userEmail])
 
     const handleOpenModal = (activity) => {
         setAtividade(activity);
@@ -44,43 +52,45 @@ function Home() {
         // Buscar as últimas 10 atividades registradas no Firebase
         const minhaConsulta = query(
             atividadesRef,
-            where('nome', '==', userName),
+            where('email', '==', userEmail),
             orderBy('data_inicio', 'desc'),
             limit(10)
         );
 
         const querySnapshot = await getDocs(minhaConsulta);
-        const data = querySnapshot.docs.map((doc) => {
-            const atividade = doc.data();
-            const dataInicio = atividade.data_inicio.toDate();
-            const dataFim = atividade.data_fim.toDate();
+        if (!querySnapshot.empty) {
+            const data = querySnapshot.docs.map((doc) => {
+                const atividade = doc.data();
+                const dataInicio = atividade.data_inicio.toDate();
+                const dataFim = atividade.data_fim.toDate();
 
-            // Calcular a diferença em segundos entre data e hora de início e data e hora de fim
-            const diffInSeconds = differenceInSeconds(dataFim, dataInicio);
-            return {
-                ...atividade,
-                id: doc.id,
-                data: dataInicio,
-                diffInSeconds: diffInSeconds // Adicionar a diferença em segundos aos dados da atividade
-            };
-        });
-        setActivities(data);
+                // Calcular a diferença em segundos entre data e hora de início e data e hora de fim
+                const diffInSeconds = differenceInSeconds(dataFim, dataInicio);
+                return {
+                    ...atividade,
+                    id: doc.id,
+                    data: dataInicio,
+                    diffInSeconds: diffInSeconds // Adicionar a diferença em segundos aos dados da atividade
+                };
+            });
+            setActivities(data);
+        }
     };
 
     const handleStartStop = () => {
         if (isRunning) {
             // Parar a contagem do tempo e salvar a atividade no Firebase
             const endTime = new Date();
-            const minhaColecao = collection(getFirestore(), 'atividades');
 
-            const dadosParaSalvar = {
+            const dadosAtividade = {
                 nome: userName,
+                email: userEmail,
                 descricao: description,
                 data_inicio: startTime,
                 data_fim: endTime,
             };
             // Salvar a atividade no Firebase
-            addDoc(minhaColecao, dadosParaSalvar)
+            addDoc(atividadesRef, dadosAtividade)
                 .then(() => {
                     // Atualizar a lista de atividades após salvar
                     loadLastActivities();
@@ -209,7 +219,7 @@ function Home() {
                     </tr>
                 </thead>
                 <tbody>
-                    {activities.map((activity) => (
+                    {activities ? activities.map((activity) => (
                         <tr key={activity.id}>
                             <td>{format(activity.data, 'dd/MM/yyyy')}</td>
                             <td>{format(activity.data_inicio.toDate(), 'HH:mm:ss')}</td>
@@ -222,7 +232,7 @@ function Home() {
                                 <button onClick={() => handleOpenModal(activity)}>Excluir</button>
                             </td>
                         </tr>
-                    ))}
+                    )) : 'Nenhum dado encontrado '}
                 </tbody>
             </table>
             <Modal
