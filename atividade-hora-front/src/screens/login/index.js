@@ -19,7 +19,7 @@ import LoginIcon from "@mui/icons-material/Login";
 
 function Login() {
   const navigate = useNavigate();
-  const { isLogado, setIsLogado } = useAuth();
+  const { setIsLogado } = useAuth();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [inputSenha, setInputSenha] = useState(false);
@@ -103,6 +103,7 @@ function Login() {
   const loginEmailSenha = async () => {
     try {
       if (usuarioComCadastro()) {
+        // eslint-disable-next-line array-callback-return
         usuarioSnapShot.docs.map((doc) => {
           const user = doc.data();
           if (user.senha !== senha) {

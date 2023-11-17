@@ -10,7 +10,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 
 const settings = [
@@ -24,6 +24,7 @@ function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
   const { isLogado, setIsLogado } = useAuth();
+  const location = useLocation();
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -42,7 +43,9 @@ function ResponsiveAppBar() {
   };
 
   const navigatePerfil = () => {
-    navigate("perfil");
+    navigate("perfil", {
+      state: location.state,
+    });
   };
 
   const logout = () => {
