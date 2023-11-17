@@ -1,9 +1,14 @@
-import { Box, TextField } from "@mui/material";
+import { doc, updateDoc } from "@firebase/firestore";
+import { Box, Button, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useLocation } from "react-router";
+import { firestore } from "../../components/google-sign-in/config";
 
 function Perfil() {
   const location = useLocation();
+  const originalName = location.state.userName;
+  const originalPhoto = location.state.userPhoto;
+  const userId = location.state.userId;
   const [name, setName] = useState(location.state.userName);
   const [photo, setPhoto] = useState(location.state.userPhoto);
   const [email, setEmail] = useState(location.state.userEmail);
@@ -18,6 +23,27 @@ function Perfil() {
       };
 
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    // Verifica se houve alteração no nome ou na foto
+    if (name !== originalName || photo !== originalPhoto) {
+      // Cria uma referência para o documento do usuário no Firestore
+      debugger
+      const userDocRef = doc(firestore, "usuarios", userId);
+
+      console.log("Firestore object:", firestore);
+      console.log("User ID:", userId);
+      console.log("User Doc Ref:", userDocRef);
+      // Atualiza os campos no Firestore
+      await updateDoc(userDocRef, {
+        nome: name
+      });
+
+      console.log("Alterações salvas no Firestore.");
+    } else {
+      console.log("Nenhuma alteração para salvar.");
     }
   };
 
@@ -71,7 +97,15 @@ function Perfil() {
           style={{ width: "100%" }}
           type="text"
           variant="filled"
+          disabled
         />
+        <Button
+          variant="contained"
+          style={{ margin: "20px" }}
+          onClick={handleSave}
+        >
+          Salvar
+        </Button>
       </Box>
     </>
   );

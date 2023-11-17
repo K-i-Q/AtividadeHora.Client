@@ -77,6 +77,7 @@ function Login() {
           userName: data.user.displayName,
           userPhoto: data.user.photoURL,
           userEmail: data.user.email,
+          userId: data.user.uid 
         },
       });
     } catch (error) {
