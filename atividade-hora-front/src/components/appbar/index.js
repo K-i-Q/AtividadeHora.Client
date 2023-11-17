@@ -63,7 +63,7 @@ function ResponsiveAppBar({ handleLoginClick, isLogado, handleOpenModalEmail, lo
                             textDecoration: 'none',
                         }}
                     >
-                        LOGO
+                        Oliveira
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 
