@@ -4,28 +4,26 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import AdbIcon from "@mui/icons-material/Adb";
 import Tooltip from "@mui/material/Tooltip";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
-import GoogleIcon from "@mui/icons-material/Google";
-import PersonIcon from "@mui/icons-material/Person";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth";
 
-const settings = ["Perfil", "Administrativo", "Sair"];
+const settings = [
+  { label: "Perfil" },
+  { label: "Administrativo" },
+  { label: "Sair" },
+];
 
-function ResponsiveAppBar({
-  handleLoginClick,
-  isLogado,
-  handleOpenModalEmail,
-  setIsLogado
-}) {
+function ResponsiveAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
+  const { isLogado, setIsLogado } = useAuth();
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -43,18 +41,17 @@ function ResponsiveAppBar({
     setAnchorElUser(null);
   };
 
-  const navigatePerfil = () =>{
-    navigate('perfil')
+  const navigatePerfil = () => {
+    navigate("perfil");
   };
 
   const logout = () => {
-    localStorage.setItem('email', '');
+    localStorage.setItem("email", "");
     setIsLogado(false);
-    navigate('/');
-  }
+    navigate("/");
+  };
 
   const handleClickSetting = (setting) => {
-    debugger
     switch (setting) {
       case "Sair":
         logout();
@@ -120,7 +117,7 @@ function ResponsiveAppBar({
           </Box>
           {isLogado ? (
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
+              <Tooltip title="Abrir menu">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src={""} />
                 </IconButton>
@@ -142,35 +139,20 @@ function ResponsiveAppBar({
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <MenuItem key={setting.label} onClick={handleCloseUserMenu}>
                     <Typography
-                      textAlign="center"
-                      onClick={() => handleClickSetting(setting)}
+                      textAlign="right"
+                      sx={{ width: "100%", marginLeft: "auto" }}
+                      onClick={() => handleClickSetting(setting.label)}
                     >
-                      {setting}
+                      {setting.label}
                     </Typography>
                   </MenuItem>
                 ))}
               </Menu>
             </Box>
           ) : (
-            <>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => handleLoginClick(true, null, null, null)}
-                endIcon={<GoogleIcon />}
-              >
-                Entrar com Google
-              </Button>
-              <Button
-                color="inherit"
-                onClick={() => handleOpenModalEmail()}
-                endIcon={<PersonIcon />}
-              >
-                Entrar com usuário e senha
-              </Button>
-            </>
+            <></>
           )}
         </Toolbar>
       </AppBar>
