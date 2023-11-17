@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import AdbIcon from "@mui/icons-material/Adb";
 import Tooltip from "@mui/material/Tooltip";
@@ -14,7 +13,11 @@ import BlurOnIcon from "@mui/icons-material/BlurOn";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 
-const settings = ["Perfil", "Administrativo", "Sair"];
+const settings = [
+  { label: "Perfil" },
+  { label: "Administrativo" },
+  { label: "Sair" },
+];
 
 function ResponsiveAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -38,17 +41,18 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
-  const navigatePerfil = () =>{
-    navigate('perfil')
+  const navigatePerfil = () => {
+    navigate("perfil");
   };
 
   const logout = () => {
-    localStorage.setItem('email', '');
+    localStorage.setItem("email", "");
     setIsLogado(false);
-    navigate('/');
-  }
+    navigate("/");
+  };
 
   const handleClickSetting = (setting) => {
+    debugger;
     switch (setting) {
       case "Sair":
         logout();
@@ -136,20 +140,20 @@ function ResponsiveAppBar() {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <MenuItem key={setting.label} onClick={handleCloseUserMenu}>
                     <Typography
-                      textAlign="center"
-                      onClick={() => handleClickSetting(setting)}
+                      textAlign="right"
+                      sx={{ width: "100%", marginLeft: "auto" }}
+                      onClick={() => handleClickSetting(setting.label)}
                     >
-                      {setting}
+                      {setting.label}
                     </Typography>
                   </MenuItem>
                 ))}
               </Menu>
             </Box>
           ) : (
-            <>
-            </>
+            <></>
           )}
         </Toolbar>
       </AppBar>
