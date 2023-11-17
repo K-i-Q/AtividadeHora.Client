@@ -12,19 +12,20 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import GoogleIcon from "@mui/icons-material/Google";
 import PersonIcon from "@mui/icons-material/Person";
-import BlurOnIcon from '@mui/icons-material/BlurOn';
+import BlurOnIcon from "@mui/icons-material/BlurOn";
+import { useNavigate } from "react-router-dom";
 
-
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Perfil", "Administrativo", "Sair"];
 
 function ResponsiveAppBar({
   handleLoginClick,
   isLogado,
   handleOpenModalEmail,
-  logout,
+  setIsLogado
 }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const navigate = useNavigate();
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -42,9 +43,29 @@ function ResponsiveAppBar({
     setAnchorElUser(null);
   };
 
+  const navigatePerfil = () =>{
+    navigate('perfil')
+  };
+
+  const logout = () => {
+    localStorage.setItem('email', '');
+    setIsLogado(false);
+    navigate('/');
+  }
+
   const handleClickSetting = (setting) => {
-    if (setting === "Logout") {
-      logout();
+    debugger
+    switch (setting) {
+      case "Sair":
+        logout();
+        break;
+      case "Perfil":
+        navigatePerfil();
+        break;
+      case "Administrativo":
+        break;
+      default:
+        break;
     }
   };
 
@@ -142,7 +163,11 @@ function ResponsiveAppBar({
               >
                 Entrar com Google
               </Button>
-              <Button color="inherit" onClick={() => handleOpenModalEmail()} endIcon={<PersonIcon />}>
+              <Button
+                color="inherit"
+                onClick={() => handleOpenModalEmail()}
+                endIcon={<PersonIcon />}
+              >
                 Entrar com usuário e senha
               </Button>
             </>

@@ -6,7 +6,7 @@ import Modal from '@mui/material/Modal';
 import { Box, Button, Typography } from '@mui/material';
 import ExcelJS from 'exceljs';
 import checkCollection from '../../repository';
-import { useAuth } from '../auth';
+import { useAuth } from '../../components/auth';
 
 function Home() {
     const location = useLocation();
