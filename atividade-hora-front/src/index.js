@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import Home from './components/home';
+import Home from './screens/home';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import SignIn from './components/google-sign-in';
 import Error from './components/error';
 import { AuthProvider } from './components/auth';
+import Perfil from './screens/perfil';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: 'home',
         element: <Home />
+      },
+      {
+        path: 'perfil',
+        element: <Perfil />
       }
     ]
   }

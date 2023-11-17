@@ -149,17 +149,13 @@ function App() {
     guardarEmailNavegarHome();
   };
 
-  const logout = () => {
-    localStorage.setItem('email', '');
-    setIsLogado(false);
-    navigate('/');
-  }
+ 
 
 
   return (
     <>
       <div className="App">
-        <ResponsiveAppBar logout={logout} handleOpenModalEmail={handleOpenModalEmail} isLogado={isLogado} handleLoginClick={login} />
+        <ResponsiveAppBar setIsLogado={setIsLogado} handleOpenModalEmail={handleOpenModalEmail} isLogado={isLogado} handleLoginClick={login} />
         <header className="App-header">
           <Outlet isLogado={isLogado} />
           <Footer />
