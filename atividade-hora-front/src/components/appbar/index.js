@@ -10,22 +10,17 @@ import AdbIcon from "@mui/icons-material/Adb";
 import Tooltip from "@mui/material/Tooltip";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
-import GoogleIcon from "@mui/icons-material/Google";
-import PersonIcon from "@mui/icons-material/Person";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth";
 
 const settings = ["Perfil", "Administrativo", "Sair"];
 
-function ResponsiveAppBar({
-  handleLoginClick,
-  isLogado,
-  handleOpenModalEmail,
-  setIsLogado
-}) {
+function ResponsiveAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
+  const { isLogado, setIsLogado } = useAuth();
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -54,7 +49,6 @@ function ResponsiveAppBar({
   }
 
   const handleClickSetting = (setting) => {
-    debugger
     switch (setting) {
       case "Sair":
         logout();
@@ -155,21 +149,6 @@ function ResponsiveAppBar({
             </Box>
           ) : (
             <>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => handleLoginClick(true, null, null, null)}
-                endIcon={<GoogleIcon />}
-              >
-                Entrar com Google
-              </Button>
-              <Button
-                color="inherit"
-                onClick={() => handleOpenModalEmail()}
-                endIcon={<PersonIcon />}
-              >
-                Entrar com usuário e senha
-              </Button>
             </>
           )}
         </Toolbar>
