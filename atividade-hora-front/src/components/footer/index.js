@@ -19,10 +19,7 @@ const Footer = () => {
       }}
     >
       <Typography variant="body1" component="span" sx={{ marginRight: '0.5rem' }}>
-        © {new Date().getFullYear()} Seu Nome ou Empresa
-      </Typography>
-      <Typography variant="body1" component="span">
-        Desenvolvido por Carlos Oliveira
+        © {new Date().getFullYear()} Desenvolvido por Carlos Oliveira
       </Typography>
     </Box>
   );
