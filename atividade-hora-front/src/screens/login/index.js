@@ -51,8 +51,7 @@ function Login() {
   };
 
   const estiloImagem = {
-    width: "100%",
-    height: "100%",
+    height: "100vh",
     objectFit: "cover", // Garante que a imagem cubra todo o espaço
   };
 

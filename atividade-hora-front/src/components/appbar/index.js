@@ -52,7 +52,6 @@ function ResponsiveAppBar() {
   };
 
   const handleClickSetting = (setting) => {
-    debugger;
     switch (setting) {
       case "Sair":
         logout();
@@ -118,7 +117,7 @@ function ResponsiveAppBar() {
           </Box>
           {isLogado ? (
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
+              <Tooltip title="Abrir menu">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src={""} />
                 </IconButton>
