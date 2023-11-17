@@ -5,10 +5,10 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Home from './screens/home';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import SignIn from './components/google-sign-in';
 import Error from './components/error';
 import { AuthProvider } from './components/auth';
 import Perfil from './screens/perfil';
+import Login from './screens/login';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <SignIn />
+        element: <Login />
       },
       {
         path: 'home',
